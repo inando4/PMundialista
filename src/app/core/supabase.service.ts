@@ -46,7 +46,7 @@ export class SupabaseService {
     }
   }
 
-  async signUp(email: string, password: string, displayName: string): Promise<void> {
+  async signUp(email: string, password: string, displayName: string): Promise<boolean> {
     const { data, error } = await this.client.auth.signUp({
       email,
       password,
@@ -64,6 +64,8 @@ export class SupabaseService {
     if (data.user && data.session) {
       await this.upsertMyProfile(displayName, email, data.user.id);
     }
+
+    return !!data.session;
   }
 
   async signOut(): Promise<void> {

@@ -34,8 +34,12 @@ export class LoginComponent {
         if (!displayName.trim()) {
           throw new Error('Ingresa tu nombre para registrarte.');
         }
-        await this.supabase.signUp(email.trim(), password, displayName.trim());
-        this.message.set('Cuenta creada. Si Supabase pide confirmacion por email, confirma tu correo antes de entrar.');
+        const hasSession = await this.supabase.signUp(email.trim(), password, displayName.trim());
+        if (hasSession) {
+          await this.router.navigateByUrl('/ranking');
+          return;
+        }
+        this.mode.set('login');
       } else {
         await this.supabase.signIn(email.trim(), password);
         await this.router.navigateByUrl('/ranking');
