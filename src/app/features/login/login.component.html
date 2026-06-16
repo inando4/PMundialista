@@ -1,0 +1,41 @@
+<section class="auth-layout">
+  <form class="panel auth-card" [formGroup]="form" (ngSubmit)="submit()">
+    <div>
+      <p class="eyebrow">Polla Mundialista 2026</p>
+      <h1>{{ mode() === 'login' ? 'Ingresar' : 'Crear cuenta' }}</h1>
+    </div>
+
+    @if (!supabase.isConfigured()) {
+      <p class="alert">Configura Supabase en <code>src/environments/environment.ts</code> antes de usar la app.</p>
+    }
+
+    @if (mode() === 'signup') {
+      <label>
+        Nombre visible
+        <input type="text" formControlName="displayName" placeholder="Luis Perez" />
+      </label>
+    }
+
+    <label>
+      Email
+      <input type="email" formControlName="email" placeholder="tu@email.com" />
+    </label>
+
+    <label>
+      Password
+      <input type="password" formControlName="password" placeholder="Minimo 6 caracteres" />
+    </label>
+
+    @if (message()) {
+      <p class="alert">{{ message() }}</p>
+    }
+
+    <button type="submit" class="primary-button" [disabled]="form.invalid || loading()">
+      {{ loading() ? 'Procesando...' : mode() === 'login' ? 'Entrar' : 'Registrarme' }}
+    </button>
+
+    <button type="button" class="link-button" (click)="toggleMode()">
+      {{ mode() === 'login' ? 'Crear una cuenta' : 'Ya tengo cuenta' }}
+    </button>
+  </form>
+</section>

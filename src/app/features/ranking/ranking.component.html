@@ -1,0 +1,47 @@
+<section class="page-heading">
+  <div>
+    <p class="eyebrow">Tabla de posiciones</p>
+    <h1>Ranking general</h1>
+  </div>
+  <button type="button" class="ghost-button" (click)="load()">Actualizar</button>
+</section>
+
+@if (error()) {
+  <p class="alert">{{ error() }}</p>
+}
+
+@if (loading()) {
+  <p class="empty-state">Cargando ranking...</p>
+} @else if (!rows().length) {
+  <p class="empty-state">Aun no hay participantes registrados.</p>
+} @else {
+  <section class="panel table-panel">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Participante</th>
+          <th>Pago</th>
+          <th>Puntos</th>
+          <th>Resultados</th>
+          <th>Exactos</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.profile_id; let i = $index) {
+          <tr>
+            <td>{{ i + 1 }}</td>
+            <td>
+              <strong>{{ row.display_name }}</strong>
+              <small>{{ row.email }}</small>
+            </td>
+            <td><span class="status-pill" [class.ok]="row.has_paid">{{ row.has_paid ? 'Pagado' : 'Pendiente' }}</span></td>
+            <td><strong>{{ row.points }}</strong></td>
+            <td>{{ row.correct_results }}</td>
+            <td>{{ row.exact_scores }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+}

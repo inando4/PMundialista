@@ -1,0 +1,24 @@
+<header class="app-header">
+  <a class="brand" routerLink="/ranking">
+    <span class="brand-mark">26</span>
+    <span>
+      <strong>Polla Mundialista</strong>
+      <small>2026</small>
+    </span>
+  </a>
+
+  @if (user()) {
+    <nav class="app-nav" aria-label="Navegacion principal">
+      <a routerLink="/ranking" routerLinkActive="active">Ranking</a>
+      <a routerLink="/pronosticos" routerLinkActive="active">Pronosticos</a>
+      @if (isAdmin()) {
+        <a routerLink="/admin" routerLinkActive="active">Admin</a>
+      }
+      <button type="button" class="ghost-button" (click)="signOut()">Salir</button>
+    </nav>
+  }
+</header>
+
+<main class="app-main">
+  <router-outlet />
+</main>

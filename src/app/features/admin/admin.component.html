@@ -1,0 +1,98 @@
+<section class="page-heading">
+  <div>
+    <p class="eyebrow">Panel administrador</p>
+    <h1>Resultados, participantes y reglas</h1>
+  </div>
+  <button type="button" class="ghost-button" (click)="load()">Actualizar</button>
+</section>
+
+@if (message()) {
+  <p class="alert">{{ message() }}</p>
+}
+
+@if (loading()) {
+  <p class="empty-state">Cargando panel...</p>
+} @else {
+  <section class="admin-grid">
+    <article class="panel">
+      <h2>Reglas de puntuacion</h2>
+      <div class="compact-form">
+        <label>
+          Resultado correcto
+          <input type="number" min="0" [ngModel]="resultPoints()" (ngModelChange)="resultPoints.set($event)" />
+        </label>
+        <label>
+          Bonus marcador exacto
+          <input type="number" min="0" [ngModel]="exactBonusPoints()" (ngModelChange)="exactBonusPoints.set($event)" />
+        </label>
+        <button type="button" class="primary-button" (click)="saveRules()">Guardar reglas</button>
+      </div>
+    </article>
+
+    <article class="panel">
+      <h2>Participantes</h2>
+      <div class="stack-list">
+        @for (profile of profiles(); track profile.id) {
+          <div class="list-row">
+            <div>
+              <strong>{{ profile.display_name }}</strong>
+              <small>{{ profile.email }}</small>
+            </div>
+            <div class="row-actions">
+              <button type="button" class="ghost-button" (click)="togglePaid(profile)">
+                {{ profile.has_paid ? 'Marcar pendiente' : 'Marcar pagado' }}
+              </button>
+              <button type="button" class="danger-button" (click)="deleteProfile(profile)">Eliminar</button>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+  </section>
+
+  <section class="panel">
+    <h2>Resultados oficiales</h2>
+
+    <div class="result-days">
+      @for (day of resultDays(); track day.key) {
+        <section class="result-day">
+          <header class="day-heading">
+            <div>
+              <span class="eyebrow">{{ day.date | date: 'EEEE d MMMM' }}</span>
+              <h3>{{ day.matches.length }} partidos</h3>
+            </div>
+            <span class="status-pill" [class.ok]="day.finishedCount === day.matches.length">
+              {{ day.finishedCount }} / {{ day.matches.length }} finalizados
+            </span>
+          </header>
+
+          <div class="result-list">
+            @for (match of day.matches; track match.id) {
+              <div class="result-row">
+                <div class="result-summary">
+                  <span class="result-time">{{ match.starts_at | date: 'HH:mm' }}</span>
+                  <div>
+                    <strong>{{ match.home_team }} vs {{ match.away_team }}</strong>
+                    <small>{{ match.stage }}</small>
+                  </div>
+                </div>
+
+                <div class="result-controls">
+                  <input type="number" min="0" [(ngModel)]="resultDrafts()[match.id].home_score" aria-label="Goles local" />
+                  <span>-</span>
+                  <input type="number" min="0" [(ngModel)]="resultDrafts()[match.id].away_score" aria-label="Goles visitante" />
+                  <select [(ngModel)]="resultDrafts()[match.id].status" aria-label="Estado">
+                    <option value="scheduled">Programado</option>
+                    <option value="live">En vivo</option>
+                    <option value="finished">Finalizado</option>
+                  </select>
+                  <button type="button" class="primary-button" (click)="saveResult(match)">Guardar</button>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  </section>
+}
