@@ -21,7 +21,6 @@
         <tr>
           <th>#</th>
           <th>Participante</th>
-          <th>Pago</th>
           <th>Puntos</th>
           <th>Resultados</th>
           <th>Exactos</th>
@@ -35,7 +34,6 @@
               <strong>{{ row.display_name }}</strong>
               <small>{{ row.email }}</small>
             </td>
-            <td><span class="status-pill" [class.ok]="row.has_paid">{{ row.has_paid ? 'Pagado' : 'Pendiente' }}</span></td>
             <td><strong>{{ row.points }}</strong></td>
             <td>{{ row.correct_results }}</td>
             <td>{{ row.exact_scores }}</td>
