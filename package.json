@@ -5,7 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:github-pages": "ng build --base-href /AplicativoApuestasMundial/",
+    "build:github-pages": "ng build --base-href /PMundialista/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
