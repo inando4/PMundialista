@@ -7,6 +7,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/login/login.component').then((m) => m.LoginComponent),
   },
   {
+    path: 'actualizar-password',
+    loadComponent: () => import('./features/update-password/update-password.component').then((m) => m.UpdatePasswordComponent),
+  },
+  {
     path: 'ranking',
     canActivate: [authGuard],
     loadComponent: () => import('./features/ranking/ranking.component').then((m) => m.RankingComponent),

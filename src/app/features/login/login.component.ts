@@ -3,6 +3,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SupabaseService } from '../../core/supabase.service';
 
+type AuthMode = 'login' | 'signup' | 'recovery';
+
 @Component({
   selector: 'app-login',
   imports: [ReactiveFormsModule],
@@ -13,7 +15,7 @@ export class LoginComponent {
   private readonly router = inject(Router);
   readonly supabase = inject(SupabaseService);
 
-  readonly mode = signal<'login' | 'signup'>('login');
+  readonly mode = signal<AuthMode>('login');
   readonly loading = signal(false);
   readonly message = signal('');
 
@@ -29,6 +31,12 @@ export class LoginComponent {
 
     try {
       const { displayName, email, password } = this.form.getRawValue();
+
+      if (this.mode() === 'recovery') {
+        await this.supabase.sendPasswordRecovery(email.trim());
+        this.message.set('Te enviamos un enlace para cambiar tu contrasena. Revisa tu correo.');
+        return;
+      }
 
       if (this.mode() === 'signup') {
         if (!displayName.trim()) {
@@ -51,8 +59,29 @@ export class LoginComponent {
     }
   }
 
+  isSubmitDisabled(): boolean {
+    if (this.loading() || this.form.controls.email.invalid) {
+      return true;
+    }
+
+    if (this.mode() === 'recovery') {
+      return false;
+    }
+
+    if (this.form.controls.password.invalid) {
+      return true;
+    }
+
+    return this.mode() === 'signup' && !this.form.controls.displayName.value.trim();
+  }
+
   toggleMode(): void {
     this.mode.set(this.mode() === 'login' ? 'signup' : 'login');
+    this.message.set('');
+  }
+
+  setMode(mode: AuthMode): void {
+    this.mode.set(mode);
     this.message.set('');
   }
 }

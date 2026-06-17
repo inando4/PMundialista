@@ -2,7 +2,15 @@
   <form class="panel auth-card" [formGroup]="form" (ngSubmit)="submit()">
     <div>
       <p class="eyebrow">Polla Mundialista 2026</p>
-      <h1>{{ mode() === 'login' ? 'Ingresar' : 'Crear cuenta' }}</h1>
+      <h1>
+        @if (mode() === 'login') {
+          Ingresar
+        } @else if (mode() === 'signup') {
+          Crear cuenta
+        } @else {
+          Recuperar contrasena
+        }
+      </h1>
     </div>
 
     @if (!supabase.isConfigured()) {
@@ -21,21 +29,34 @@
       <input type="email" formControlName="email" placeholder="tu@email.com" />
     </label>
 
-    <label>
-      Password
-      <input type="password" formControlName="password" placeholder="Minimo 6 caracteres" />
-    </label>
+    @if (mode() !== 'recovery') {
+      <label>
+        Password
+        <input type="password" formControlName="password" placeholder="Minimo 6 caracteres" />
+      </label>
+    }
 
     @if (message()) {
       <p class="alert">{{ message() }}</p>
     }
 
-    <button type="submit" class="primary-button" [disabled]="form.invalid || loading()">
-      {{ loading() ? 'Procesando...' : mode() === 'login' ? 'Entrar' : 'Registrarme' }}
+    <button type="submit" class="primary-button" [disabled]="isSubmitDisabled()">
+      @if (loading()) {
+        Procesando...
+      } @else if (mode() === 'login') {
+        Entrar
+      } @else if (mode() === 'signup') {
+        Registrarme
+      } @else {
+        Enviar enlace
+      }
     </button>
 
-    <button type="button" class="link-button" (click)="toggleMode()">
-      {{ mode() === 'login' ? 'Crear una cuenta' : 'Ya tengo cuenta' }}
-    </button>
+    @if (mode() === 'login') {
+      <button type="button" class="link-button" (click)="setMode('recovery')">Olvide mi contrasena</button>
+      <button type="button" class="link-button" (click)="toggleMode()">Crear una cuenta</button>
+    } @else {
+      <button type="button" class="link-button" (click)="setMode('login')">Volver a ingresar</button>
+    }
   </form>
 </section>

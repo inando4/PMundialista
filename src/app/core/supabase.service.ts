@@ -9,6 +9,7 @@ export class SupabaseService {
   readonly client: SupabaseClient;
   readonly session = signal<Session | null>(null);
   readonly user = signal<User | null>(null);
+  readonly isPasswordRecovery = signal(false);
 
   constructor(private readonly router: Router) {
     this.client = createClient(environment.supabaseUrl, environment.supabaseAnonKey, {
@@ -24,9 +25,18 @@ export class SupabaseService {
       this.user.set(data.session?.user ?? null);
     });
 
-    this.client.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
+    this.client.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
       this.session.set(session);
       this.user.set(session?.user ?? null);
+
+      if (event === 'PASSWORD_RECOVERY') {
+        this.isPasswordRecovery.set(true);
+        void this.router.navigateByUrl('/actualizar-password');
+      }
+
+      if (event === 'SIGNED_OUT') {
+        this.isPasswordRecovery.set(false);
+      }
     });
   }
 
@@ -66,6 +76,22 @@ export class SupabaseService {
     }
 
     return !!data.session;
+  }
+
+  async sendPasswordRecovery(email: string): Promise<void> {
+    const redirectTo = `${window.location.origin}${window.location.pathname}?password_recovery=1`;
+    const { error } = await this.client.auth.resetPasswordForEmail(email, { redirectTo });
+    if (error) {
+      throw error;
+    }
+  }
+
+  async updatePassword(password: string): Promise<void> {
+    const { error } = await this.client.auth.updateUser({ password });
+    if (error) {
+      throw error;
+    }
+    this.isPasswordRecovery.set(false);
   }
 
   async signOut(): Promise<void> {
