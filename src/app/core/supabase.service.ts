@@ -153,6 +153,22 @@ export class SupabaseService {
     return data ?? [];
   }
 
+  async getProfile(profileId: string): Promise<Profile> {
+    const { data, error } = await this.client.from('profiles').select('*').eq('id', profileId).single();
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
+
+  async getPredictionsByProfile(profileId: string): Promise<Prediction[]> {
+    const { data, error } = await this.client.from('predictions').select('*').eq('user_id', profileId);
+    if (error) {
+      throw error;
+    }
+    return data ?? [];
+  }
+
   async updatePayment(profile: Profile, hasPaid: boolean): Promise<void> {
     const { error } = await this.client.from('profiles').update({ has_paid: hasPaid }).eq('id', profile.id);
     if (error) {

@@ -1,0 +1,75 @@
+<section class="page-heading">
+  <div>
+    <p class="eyebrow">Transparencia</p>
+    <h1>{{ profile()?.display_name ?? 'Participante' }}</h1>
+    @if (profile()) {
+      <small>{{ profile()?.email }}</small>
+    }
+  </div>
+  <div class="header-actions">
+    <a class="ghost-button" routerLink="/ranking">Volver al ranking</a>
+    <button type="button" class="ghost-button" (click)="load()">Actualizar</button>
+  </div>
+</section>
+
+@if (message()) {
+  <p class="alert">{{ message() }}</p>
+}
+
+@if (loading()) {
+  <p class="empty-state">Cargando pronosticos...</p>
+} @else if (!matches().length) {
+  <p class="empty-state">Aun no hay partidos cargados.</p>
+} @else {
+  <section class="match-days">
+    @for (day of matchDays(); track day.key) {
+      <section class="match-day">
+        <header class="day-heading">
+          <div>
+            <span class="eyebrow">{{ day.date | date: 'EEEE d MMMM' }}</span>
+            <h2>{{ day.matches.length }} partidos</h2>
+          </div>
+          <span class="status-pill" [class.ok]="day.visibleCount > 0">
+            {{ day.visibleCount }} visibles
+          </span>
+        </header>
+
+        <div class="match-grid">
+          @for (match of day.matches; track match.id) {
+            <article class="panel match-card" [class.locked]="!canShowPrediction(match)">
+              <div class="match-meta">
+                <span>{{ match.stage }}</span>
+                <span>{{ match.starts_at | date: 'HH:mm' }}</span>
+              </div>
+
+              <div class="teams">
+                <strong>{{ match.home_team }}</strong>
+                <span>vs</span>
+                <strong>{{ match.away_team }}</strong>
+              </div>
+
+              @if (match.status === 'finished') {
+                <p class="official-score">Resultado oficial: {{ match.home_score }} - {{ match.away_score }}</p>
+              }
+
+              <div class="readonly-prediction">
+                @if (!canShowPrediction(match)) {
+                  <span class="status-pill">Oculto hasta que empiece</span>
+                } @else {
+                  @if (predictionFor(match); as prediction) {
+                    <span class="score-chip">
+                      {{ prediction.predicted_home_score }} - {{ prediction.predicted_away_score }}
+                    </span>
+                    <small>Pronostico registrado</small>
+                  } @else {
+                    <span class="status-pill">Sin pronostico</span>
+                  }
+                }
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+    }
+  </section>
+}

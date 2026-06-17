@@ -31,7 +31,9 @@
           <tr>
             <td>{{ i + 1 }}</td>
             <td>
-              <strong>{{ row.display_name }}</strong>
+              <a class="participant-link" [routerLink]="['/participante', row.profile_id, 'pronosticos']">
+                <strong>{{ row.display_name }}</strong>
+              </a>
               <small>{{ row.email }}</small>
             </td>
             <td><strong>{{ row.points }}</strong></td>

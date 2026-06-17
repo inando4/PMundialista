@@ -160,6 +160,16 @@ code {
   color: var(--primary);
 }
 
+.participant-link {
+  color: var(--primary);
+  display: inline-flex;
+}
+
+.participant-link:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
 .app-main {
   margin: 0 auto;
   max-width: 1180px;
@@ -202,6 +212,14 @@ code {
 .page-heading h1 {
   font-size: clamp(1.7rem, 4vw, 2.4rem);
   margin-bottom: 0;
+}
+
+.header-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
 }
 
 .eyebrow {
@@ -368,6 +386,25 @@ th {
   font-weight: 800;
   margin-bottom: 0;
   text-align: center;
+}
+
+.readonly-prediction {
+  align-items: center;
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  min-height: 4rem;
+}
+
+.score-chip {
+  background: var(--text);
+  border-radius: 8px;
+  color: white;
+  display: inline-flex;
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1;
+  padding: 0.65rem 0.9rem;
 }
 
 .admin-grid {

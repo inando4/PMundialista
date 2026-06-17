@@ -1,10 +1,12 @@
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { LeaderboardRow } from '../../core/models';
 import { SupabaseService } from '../../core/supabase.service';
 
 @Component({
   selector: 'app-ranking',
+  imports: [RouterLink],
   templateUrl: './ranking.component.html',
 })
 export class RankingComponent implements OnInit, OnDestroy {

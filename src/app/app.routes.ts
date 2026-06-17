@@ -12,6 +12,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/ranking/ranking.component').then((m) => m.RankingComponent),
   },
   {
+    path: 'participante/:profileId/pronosticos',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/participant-predictions/participant-predictions.component').then((m) => m.ParticipantPredictionsComponent),
+  },
+  {
     path: 'pronosticos',
     canActivate: [authGuard],
     loadComponent: () => import('./features/predictions/predictions.component').then((m) => m.PredictionsComponent),
