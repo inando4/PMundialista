@@ -1,7 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Match, Profile, ScoringRules } from '../../core/models';
+import { formatPeruDay, formatPeruTime, peruDateKey, teamCode, teamFlag } from '../../core/match-ui';
 import { SupabaseService } from '../../core/supabase.service';
 
 interface ResultDraft {
@@ -19,7 +19,7 @@ interface ResultDay {
 
 @Component({
   selector: 'app-admin',
-  imports: [DatePipe, FormsModule],
+  imports: [FormsModule],
   templateUrl: './admin.component.html',
 })
 export class AdminComponent implements OnInit {
@@ -33,17 +33,16 @@ export class AdminComponent implements OnInit {
   readonly exactBonusPoints = signal(3);
   readonly loading = signal(true);
   readonly message = signal('');
+  readonly formatPeruDay = formatPeruDay;
+  readonly formatPeruTime = formatPeruTime;
+  readonly teamCode = teamCode;
+  readonly teamFlag = teamFlag;
+  readonly todayKey = peruDateKey(Date.now());
   readonly resultDays = computed<ResultDay[]>(() => {
     const groups = new Map<string, Match[]>();
-    const formatter = new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'America/Lima',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
 
     for (const match of this.matches()) {
-      const key = formatter.format(new Date(match.starts_at));
+      const key = peruDateKey(match.starts_at);
       groups.set(key, [...(groups.get(key) ?? []), match]);
     }
 
@@ -57,6 +56,10 @@ export class AdminComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.load();
+  }
+
+  isResultDayOpen(day: ResultDay): boolean {
+    return day.key === this.todayKey;
   }
 
   async load(): Promise<void> {

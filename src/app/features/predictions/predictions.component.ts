@@ -1,20 +1,23 @@
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { Match, MatchDraft, Prediction } from '../../core/models';
+import {
+  MatchSection,
+  buildMatchSections,
+  countdownLabel,
+  formatPeruDay,
+  formatPeruTime,
+  teamCode,
+  teamFlag,
+  visualStatus,
+  visualStatusLabel,
+} from '../../core/match-ui';
 import { SupabaseService } from '../../core/supabase.service';
-
-interface MatchDay {
-  key: string;
-  date: Date;
-  matches: Match[];
-  predictedCount: number;
-}
 
 @Component({
   selector: 'app-predictions',
-  imports: [DatePipe, FormsModule],
+  imports: [FormsModule],
   templateUrl: './predictions.component.html',
 })
 export class PredictionsComponent implements OnInit, OnDestroy {
@@ -29,27 +32,14 @@ export class PredictionsComponent implements OnInit, OnDestroy {
   readonly savingMatchId = signal<number | null>(null);
   readonly message = signal('');
   readonly now = signal(Date.now());
-  readonly matchDays = computed<MatchDay[]>(() => {
-    const groups = new Map<string, Match[]>();
-    const formatter = new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'America/Lima',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
-
-    for (const match of this.matches()) {
-      const key = formatter.format(new Date(match.starts_at));
-      groups.set(key, [...(groups.get(key) ?? []), match]);
-    }
-
-    return Array.from(groups.entries()).map(([key, matches]) => ({
-      key,
-      date: new Date(`${key}T12:00:00-05:00`),
-      matches,
-      predictedCount: matches.filter((match) => this.hasPrediction(match)).length,
-    }));
-  });
+  readonly matchSections = computed<MatchSection[]>(() => buildMatchSections(this.matches(), this.now()));
+  readonly countdownLabel = countdownLabel;
+  readonly formatPeruDay = formatPeruDay;
+  readonly formatPeruTime = formatPeruTime;
+  readonly teamCode = teamCode;
+  readonly teamFlag = teamFlag;
+  readonly visualStatus = visualStatus;
+  readonly visualStatusLabel = visualStatusLabel;
 
   async ngOnInit(): Promise<void> {
     await this.load();
@@ -99,6 +89,10 @@ export class PredictionsComponent implements OnInit, OnDestroy {
 
   hasPrediction(match: Match): boolean {
     return this.predictions().has(match.id);
+  }
+
+  predictedCount(matches: Match[]): number {
+    return matches.filter((match) => this.hasPrediction(match)).length;
   }
 
   async save(match: Match): Promise<void> {

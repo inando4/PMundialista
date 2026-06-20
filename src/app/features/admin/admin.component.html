@@ -55,24 +55,30 @@
 
     <div class="result-days">
       @for (day of resultDays(); track day.key) {
-        <section class="result-day">
-          <header class="day-heading">
+        <details class="result-day collapsible-day" [open]="isResultDayOpen(day)">
+          <summary class="day-heading">
             <div>
-              <span class="eyebrow">{{ day.date | date: 'EEEE d MMMM' }}</span>
+              <span class="eyebrow">{{ formatPeruDay(day.date) }}</span>
               <h3>{{ day.matches.length }} partidos</h3>
             </div>
             <span class="status-pill" [class.ok]="day.finishedCount === day.matches.length">
               {{ day.finishedCount }} / {{ day.matches.length }} finalizados
             </span>
-          </header>
+          </summary>
 
           <div class="result-list">
             @for (match of day.matches; track match.id) {
               <div class="result-row">
                 <div class="result-summary">
-                  <span class="result-time">{{ match.starts_at | date: 'HH:mm' }}</span>
+                  <span class="result-time">{{ formatPeruTime(match.starts_at) }}</span>
                   <div>
-                    <strong>{{ match.home_team }} vs {{ match.away_team }}</strong>
+                    <div class="result-teams">
+                      <span class="team-flag" [attr.title]="teamCode(match.home_team)">{{ teamFlag(match.home_team) }}</span>
+                      <strong>{{ match.home_team }}</strong>
+                      <span class="versus">vs</span>
+                      <span class="team-flag" [attr.title]="teamCode(match.away_team)">{{ teamFlag(match.away_team) }}</span>
+                      <strong>{{ match.away_team }}</strong>
+                    </div>
                     <small>{{ match.stage }}</small>
                   </div>
                 </div>
@@ -91,7 +97,7 @@
               </div>
             }
           </div>
-        </section>
+        </details>
       }
     </div>
   </section>
